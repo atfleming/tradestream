@@ -77,14 +77,14 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 - **Python 3.8+** 🐍
 - **Discord Bot Token** 🤖
 - **Gmail Account** (for notifications) 📧
-- **JMoney Discord Access** 💬
+- **Discord Access** 💬
 
 ### 📥 **Installation**
 
 1. **Clone the Repository**
    ```bash
    git clone <repository-url>
-   cd jmoney_alerts
+   cd tradestream
    ```
 
 2. **Install Dependencies**
@@ -107,8 +107,8 @@ Create `config.yaml` in the project root:
 # Discord Configuration
 discord:
   token: "YOUR_DISCORD_BOT_TOKEN"  # Get from Discord Developer Portal
-  channel_id: 123456789012345678    # JMoney Discord channel ID
-  target_author: "JMoney"           # Author to monitor
+  channel_id: 123456789012345678    # Discord channel ID
+  target_author: "USERNAME"           # Author to monitor
 
 # Trading Configuration
 trading:
