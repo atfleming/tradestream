@@ -2,7 +2,7 @@
 
 > **🏆 Production-Ready Automated Trading System with 100% Test Coverage**
 
-A comprehensive, enterprise-grade automated trading system that monitors JMoney Discord alerts and executes sophisticated paper trades with advanced risk management, real-time performance tracking, and comprehensive monitoring capabilities.
+A comprehensive, enterprise-grade automated trading system that monitors Discord alerts and executes sophisticated paper trades with advanced risk management, real-time performance tracking, and comprehensive monitoring capabilities.
 
 [![Tests](https://img.shields.io/badge/Tests-302%2F302%20Passing-brightgreen)](tests/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#testing)
