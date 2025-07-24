@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradestream-deployment
+  labels:
+    app: tradestream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tradestream
+  template:
+    metadata:
+      labels:
+        app: tradestream
+    spec:
+      containers:
+      - name: tradestream
+        image: your-registry/tradestream:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PYTHONPATH
+          value: "/app/src"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+        - name: data-volume
+          mountPath: /app/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "import sys; sys.path.append('src'); from health_monitor import HealthMonitor; print('healthy')"
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "import sys; sys.path.append('src'); from health_monitor import HealthMonitor; print('ready')"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: tradestream-config
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: tradestream-data-pvc
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tradestream-config
+data:
+  config.yaml: |
+    # Your configuration here
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tradestream-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
