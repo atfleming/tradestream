@@ -2,7 +2,7 @@
 
 > **🏆 Production-Ready Automated Trading System with 100% Test Coverage**
 
-A comprehensive, enterprise-grade automated trading system that monitors JMoney Discord alerts and executes sophisticated paper trades with advanced risk management, real-time performance tracking, and comprehensive monitoring capabilities.
+A comprehensive, enterprise-grade automated trading system that monitors Discord alerts and executes sophisticated paper trades with advanced risk management, real-time performance tracking, and comprehensive monitoring capabilities.
 
 [![Tests](https://img.shields.io/badge/Tests-302%2F302%20Passing-brightgreen)](tests/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#testing)
@@ -87,7 +87,7 @@ A comprehensive, enterprise-grade automated trading system that monitors JMoney 
 1. **Clone the Repository**
    ```bash
    git clone <repository-url>
-   cd jmoney_alerts
+   cd tradestream
    ```
 
 2. **Install Dependencies**
@@ -111,8 +111,8 @@ Create `config.yaml` in the project root:
 # Discord Configuration
 discord:
   token: "YOUR_DISCORD_BOT_TOKEN"  # Get from Discord Developer Portal
-  channel_id: 123456789012345678    # JMoney Discord channel ID
-  target_author: "JMoney"           # Author to monitor
+  channel_id: 123456789012345678    # Discord channel ID
+  target_author: "USERNAME"           # Author to monitor
 
 # Trading Configuration
 trading:
