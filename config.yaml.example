@@ -1,0 +1,63 @@
+# TradeStream Configuration Example
+# Copy this file to config.yaml and customize with your settings
+
+discord:
+  token: "YOUR_DISCORD_BOT_TOKEN"  # Get from Discord Developer Portal
+  channel_id: 123456789012345678    # JMoney Discord channel ID
+  target_author: "JMoney"           # Author to monitor
+
+trading:
+  account_id: "YOUR_ACCOUNT_ID"
+  paper_trading_enabled: true       # Start with paper trading
+  live_trading_enabled: false      # Enable when ready for live trading
+  concurrent_trading: false        # Enable both paper and live simultaneously
+  enable_auto_trading: false       # Set to true to enable actual trading
+  
+  # Contract specifications for MES (Micro E-mini S&P 500)
+  symbol: "MES"
+  contract_name: "Micro E-mini S&P 500"
+  exchange: "CME"
+  tick_size: 0.25
+  tick_value: 1.25
+  margin_requirement: 500
+  
+  # Size mapping (customize as needed)
+  size_mapping:
+    A: 3  # Aggressive size
+    B: 2  # Balanced size
+    C: 1  # Conservative size
+  
+  # Risk management
+  max_daily_trades: 10
+  max_position_size: 5
+
+risk:
+  max_loss_per_trade: 100.0        # Maximum loss per trade ($)
+  daily_loss_limit: 500.0          # Daily loss limit ($)
+  max_consecutive_losses: 3        # Circuit breaker threshold
+  position_size_limit: 5           # Maximum position size
+  enable_circuit_breaker: true     # Enable automatic trading halt
+
+email:
+  enabled: false                   # Set to true to enable email notifications
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  username: "your-email@gmail.com"
+  password: "your-app-password"    # Use Gmail App Password
+  from_address: "your-email@gmail.com"
+  to_addresses:
+    - "your-email@gmail.com"
+  send_trade_executions: true
+  send_daily_summaries: true
+
+database:
+  file_path: "data/trading_data.db"
+  backup_enabled: true
+  backup_interval_hours: 6
+
+logging:
+  level: "INFO"
+  file_path: "logs/trading_bot.log"
+  max_file_size_mb: 10
+  backup_count: 5
+  console_output: true

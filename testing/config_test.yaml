@@ -1,0 +1,92 @@
+# Test Configuration for JMoney Discord Alert Trading System
+# This is used for testing components without real Discord/trading credentials
+
+# Discord Settings (test values)
+discord:
+  token: "test_token_placeholder"
+  channel_id: 123456789  # Test channel ID
+  target_author: "JMoney"
+  reconnect_attempts: 5
+  reconnect_delay: 30
+
+# Trading Configuration (test values)
+trading:
+  account_id: "test_account_123"
+  
+  # Contract Specifications
+  symbol: "MES"  # Micro E-mini S&P 500 futures
+  contract_name: "Micro E-mini S&P 500"
+  exchange: "CME"
+  tick_size: 0.25  # MES tick size (0.25 points)
+  tick_value: 1.25  # MES tick value ($1.25 per tick)
+  margin_requirement: 500.0  # Approximate margin per contract
+  
+  # Position Sizing
+  # Size mapping system: Set C size, B will be 2*C, A will be 3*C
+  # User can modify C size and system will auto-calculate A and B
+  size_mapping:
+    C: 1  # Base size - modify this value
+    B: 2  # Auto-calculated as 2 * C
+    A: 3  # Auto-calculated as 3 * C
+  
+  # Trading Limits
+  max_daily_trades: 10
+  max_position_size: 5  # Maximum total MES contracts
+  
+  # Trading Mode Configuration
+  enable_auto_trading: true   # Enable for testing
+  paper_trading_enabled: true   # Enable paper trading for testing
+  live_trading_enabled: false  # Keep live trading disabled for testing
+  concurrent_trading: false     # Test one mode at a time
+  
+  # Paper Trading Settings
+  paper_trading:
+    starting_balance: 25000.0  # Smaller test balance
+    realistic_slippage: true
+    slippage_ticks: 1
+    commission_per_contract: 2.50
+    track_separately: true
+
+# Risk Management
+risk:
+  max_loss_per_trade: 100.0
+  daily_loss_limit: 500.0
+  max_consecutive_losses: 3
+  position_size_limit: 5
+  enable_circuit_breaker: true
+
+# Database Configuration
+database:
+  file_path: "data/test_trading_data.db"
+  backup_enabled: true
+  backup_interval_hours: 24
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file_path: "logs/test_trading_bot.log"
+  max_file_size_mb: 10
+  backup_count: 5
+  console_output: true
+
+# Email Notification Settings (disabled for testing)
+email:
+  enabled: false  # Disabled for initial testing
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  username: "test@example.com"
+  password: "test_password"
+  from_address: "test@example.com"
+  to_addresses:
+    - "test@example.com"
+  send_alert_confirmations: true
+  send_trade_executions: true
+  send_daily_summaries: true
+  daily_summary_time: "17:00"
+
+# Additional Settings
+system:
+  timezone: "US/Eastern"
+  market_open: "09:30"
+  market_close: "16:00"
+  development_mode: true

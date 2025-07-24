@@ -1,0 +1,76 @@
+# TradeStream - Professional Automated Trading System
+# Production-ready dependencies for enterprise-grade trading
+
+# Core Python Requirements
+# Python 3.8+ required
+
+# Discord Integration
+discord.py>=2.3.0
+
+# Data Processing & Analysis
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Configuration Management
+PyYAML>=6.0
+
+# Async Programming
+aiofiles>=0.8.0
+aiohttp>=3.8.0
+
+# Database (SQLite is built-in)
+# sqlite3 - Built-in with Python
+
+# System Monitoring
+psutil>=5.9.0
+
+# File Watching (for config hot-reload)
+watchdog>=2.1.0
+
+# Testing Framework
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+
+# Development Tools
+black>=22.0.0
+flake8>=5.0.0
+mypy>=1.0.0
+
+# Email Notifications
+# smtplib - Built-in with Python
+# email.mime - Built-in with Python
+
+# Logging
+# logging - Built-in with Python
+
+# Date/Time Handling
+# datetime - Built-in with Python
+
+# JSON Processing
+# json - Built-in with Python
+
+# Regular Expressions
+# re - Built-in with Python
+
+# Optional: TopStepX API Integration
+# tsxapipy>=1.0.0  # Install from local tsx_api-main directory
+# pip install ./tsx_api-main
+
+# Optional: Advanced Analytics
+# scipy>=1.9.0
+# scikit-learn>=1.1.0
+# matplotlib>=3.5.0
+# seaborn>=0.11.0
+
+# Configuration hot-reloading
+watchdog>=3.0.0
+python-dotenv>=0.19.0
+
+# System monitoring and health checks
+psutil>=5.9.0
+
+# Development and testing (optional)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=4.0.0

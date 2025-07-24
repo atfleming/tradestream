@@ -1,0 +1,33 @@
+JMoney Trading Alerts Analysis - Results Summary
+================================================
+
+Key Improvements:
+- Date Range Filtering: Only processes alerts within the available ES price data range (March 30, 2025 to July 17, 2025)
+- Complete Trade Analysis: All trades now have proper results since they're within the data range
+
+Final Results:
+- 87 trading alerts successfully analyzed (down from 133 total, filtering out those without price data)
+- Date range: March 30, 2025 to July 16, 2025
+- Price range: $4,949 - $6,338
+
+Trade Performance:
+- Target 1 + 2 Hit: 65 trades (74.7%) - Both profit targets achieved
+- Target 1 Hit: 19 trades (21.8%) - First profit target achieved
+- Stop Out: 3 trades (3.4%) - Hit stop loss
+
+Overall Success Rate: 96.6% of trades hit at least Target 1
+
+New CSV Columns:
+1. Date Time - Alert timestamp
+2. Price - Entry price
+3. Size - Position size (A/B/C)
+4. Stop - Stop loss level
+5. Target 1 - First profit target (Price + 7)
+6. Target 2 - Second profit target (Price + 12)
+7. Price at Alert - Actual market price when alert was posted
+8. Result - Trade outcome analysis
+
+Files Generated:
+- clean_trading_data.py - Python script for processing alerts
+- cleaned_trading_alerts.csv - Processed trading data with results
+- results_summary.txt - This summary file
