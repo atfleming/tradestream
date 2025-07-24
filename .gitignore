@@ -20,6 +20,20 @@ backups/
 *.backup
 *.bak
 
+# Large data files
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.PNG
+*.JPG
+*.JPEG
+*.GIF
+
+# Old project directories
+discordalerttrader/
+
 # Python
 __pycache__/
 *.py[cod]
