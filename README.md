@@ -20,7 +20,9 @@ A comprehensive, enterprise-grade automated trading system that monitors JMoney 
 - **Real-Time Processing**: Instant alert processing with sub-second response times
 
 ### 📊 **Advanced Trading Engine**
-- **Paper Trading Simulation**: Complete paper trading with realistic slippage and commission
+- **🔴 Live Trading Integration**: Execute real trades through TopStepX broker using TradeForgePy
+- **📄 Paper Trading Simulation**: Complete paper trading with realistic slippage and commission
+- **🔄 Dual-Mode Operation**: Seamless switching between live and paper trading modes
 - **Professional Position Management**: Target 1 (50% exit) + Target 2 (remaining 50%) logic
 - **Breakeven Stop Management**: Automatic stop-loss adjustment to breakeven after Target 1
 - **Size Mapping System**: Flexible A/B/C position sizing with user-customizable ratios
@@ -78,6 +80,7 @@ A comprehensive, enterprise-grade automated trading system that monitors JMoney 
 - **Discord Bot Token** 🤖
 - **Gmail Account** (for notifications) 📧
 - **JMoney Discord Access** 💬
+- **TopStepX Account** (for live trading) 📈
 
 ### 📥 **Installation**
 
@@ -89,7 +92,8 @@ A comprehensive, enterprise-grade automated trading system that monitors JMoney 
 
 2. **Install Dependencies**
    ```bash
-   pip install discord.py pyyaml asyncio psutil
+   pip install -r requirements.txt
+   # Core dependencies: discord.py, pyyaml, asyncio, psutil, tradeforgepy
    ```
 
 3. **Verify Installation**
@@ -188,7 +192,55 @@ logging:
    python -c "from src.email_notifier import EmailNotifier; from src.config import ConfigManager; config = ConfigManager('config.yaml'); config.load_config(); notifier = EmailNotifier(config); print('✅ Email configuration valid!' if notifier else '❌ Email configuration failed')"
    ```
 
-#### **Step 4: Environment Variables (Optional but Recommended)**
+#### **Step 4: Configure Live Trading (Optional)**
+
+> **🔴 Live Trading Setup with TopStepX**
+
+1. **Create TopStepX Account**
+   - Sign up at [TopStepX](https://www.topstepx.com/)
+   - Complete account verification and funding
+   - Obtain API credentials from your account dashboard
+
+2. **Configure Environment Variables**
+   Create a `.env` file in your project root:
+   ```bash
+   # TopStepX Live Trading Credentials
+   TS_USERNAME=your_topstepx_username
+   TS_API_KEY=your_topstepx_api_key
+   TS_ENVIRONMENT=DEMO  # Use DEMO for testing, LIVE for production
+   ```
+
+3. **Update Configuration**
+   Add TopStepX settings to your `config.yaml`:
+   ```yaml
+   # TopStepX Live Trading Configuration
+   topstepx:
+     username: "${TS_USERNAME}"           # From .env file
+     api_key: "${TS_API_KEY}"             # From .env file  
+     environment: "${TS_ENVIRONMENT}"      # DEMO or LIVE
+     account_id: ""                       # Optional: specific account ID
+     enable_streaming: true               # Enable real-time data
+     order_timeout: 30                    # Order timeout in seconds
+   
+   # Enable live trading mode
+   trading:
+     paper_trading_enabled: false        # Set to false for live trading
+     enable_live_trading: true           # Enable live execution
+   ```
+
+4. **Test Connection**
+   ```bash
+   # Test TopStepX connection
+   python -c "from src.topstepx_broker import TopStepXBroker; import asyncio; asyncio.run(TopStepXBroker.test_connection())"
+   ```
+
+> **⚠️ Important Safety Notes:**
+> - Always test with DEMO environment first
+> - Start with small position sizes
+> - Monitor trades closely during initial live trading
+> - Keep paper trading as backup (system will fallback automatically)
+
+#### **Step 5: Environment Variables (Optional but Recommended)**
 
 For enhanced security, use environment variables:
 
@@ -350,11 +402,21 @@ logging:
   level: "INFO"                    # Production logging level
   console_output: false           # Disable console output
   
+# Live Trading Configuration
 trading:
-  paper_trading_enabled: false   # Enable live trading (when ready)
+  paper_trading_enabled: false   # Disable paper trading for live mode
+  enable_live_trading: true       # Enable live execution
+  
+# TopStepX Production Settings
+topstepx:
+  environment: "LIVE"             # Production environment
+  enable_streaming: true          # Real-time market data
+  order_timeout: 30               # Conservative timeout
   
 risk:
   enable_circuit_breaker: true   # Always enable in production
+  max_daily_loss: 500            # Conservative daily loss limit
+  position_size_limit: 2         # Conservative position sizing
   
 database:
   backup_enabled: true           # Always enable backups

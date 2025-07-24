@@ -18,6 +18,9 @@ PyYAML>=6.0
 aiofiles>=0.8.0
 aiohttp>=3.8.0
 
+# TopStepX Live Trading Integration
+tradeforgepy>=1.0.0
+
 # Database (SQLite is built-in)
 # sqlite3 - Built-in with Python
 

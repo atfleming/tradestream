@@ -12,6 +12,14 @@ trading:
   live_trading_enabled: false      # Enable when ready for live trading
   concurrent_trading: false        # Enable both paper and live simultaneously
   enable_auto_trading: false       # Set to true to enable actual trading
+
+# TopStepX Live Trading Configuration
+topstepx:
+  api_key: "YOUR_TOPSTEPX_API_KEY"   # Get from TopStepX dashboard
+  environment: "DEMO"                # "DEMO" or "LIVE" - start with DEMO
+  account_id: null                   # Optional: specific account ID (uses first active if null)
+  enable_streaming: true             # Enable real-time data streaming
+  order_timeout_seconds: 30          # Order timeout in seconds
   
   # Contract specifications for MES (Micro E-mini S&P 500)
   symbol: "MES"

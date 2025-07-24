@@ -1,4 +1,6 @@
-# JMoney Discord Alert Trading System - User Guide
+# 📖 TradeStream User Guide
+
+> **Complete Setup and Usage Guide for Paper Trading and Live Trading with TradeForgePy**
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -51,13 +53,11 @@ cd jmoney_alerts
 pip install -r requirements.txt
 ```
 
-### Step 3: Install TopStepX API (if using live trading)
+### Step 3: Install TradeForgePy (for live trading)
 ```bash
-# Option 1: From local directory
-pip install ./tsx_api-main
-
-# Option 2: From GitHub
-pip install git+https://github.com/topstep/tsx-api-python.git
+# TradeForgePy is included in requirements.txt
+# It provides modern, production-ready TopStepX integration
+pip install tradeforgepy>=1.0.0
 ```
 
 ## Configuration
@@ -101,20 +101,23 @@ pip install git+https://github.com/topstep/tsx-api-python.git
 
 ### Environment Variables
 
-Set sensitive credentials as environment variables:
+Create a `.env` file in your project root for secure credential management:
 
 ```bash
+# .env file - TradeForgePy automatically loads these
 # Discord
-export DISCORD_BOT_TOKEN="your_discord_bot_token"
+DISCORD_BOT_TOKEN=your_discord_bot_token
 
-# TopStepX (for live trading)
-export TOPSTEP_API_KEY="your_api_key"
-export TOPSTEP_SECRET_KEY="your_secret_key"
-export TOPSTEP_ACCOUNT_ID="your_account_id"
+# TopStepX Live Trading (TradeForgePy)
+TS_USERNAME=your_topstepx_username
+TS_API_KEY=your_topstepx_api_key
+TS_ENVIRONMENT=DEMO  # Use DEMO for testing, LIVE for production
 
 # Email
-export EMAIL_PASSWORD="your_app_password"
+EMAIL_PASSWORD=your_gmail_app_password
 ```
+
+> **🔒 Security Note**: Never commit the `.env` file to version control. Add it to your `.gitignore`.
 
 ### Discord Bot Setup
 

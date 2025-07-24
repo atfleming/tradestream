@@ -19,6 +19,7 @@ try:
     from .tsx_integration import TopStepXIntegration
     from .email_notifier import EmailNotifier
     from .trade_models import TradeStatus, PositionStatus, TradePosition, OrderInfo
+    from .topstepx_broker import TopStepXBroker, TopStepXConfig
 except ImportError:
     from config import ConfigManager
     from database import DatabaseManager
@@ -26,6 +27,7 @@ except ImportError:
     from tsx_integration import TopStepXIntegration
     from email_notifier import EmailNotifier
     from trade_models import TradeStatus, PositionStatus, TradePosition, OrderInfo
+    from topstepx_broker import TopStepXBroker, TopStepXConfig
 
 
 # Trade models are now imported from trade_models.py to avoid circular dependencies
@@ -52,6 +54,10 @@ class TradeExecutor:
         self.paper_trader = None  # Set later to avoid circular import
         self.email_notifier = email_notifier
         self.logger = logging.getLogger(__name__)
+        
+        # TopStepX live broker integration
+        self.topstepx_broker: Optional[TopStepXBroker] = None
+        self._initialize_topstepx_broker()
         
         # Trading mode configuration
         self.paper_trading_enabled = config.trading.paper_trading_enabled if config.trading else False
@@ -83,6 +89,30 @@ class TradeExecutor:
         self.price_monitor_task: Optional[asyncio.Task] = None
         self.is_monitoring = False
     
+    def _initialize_topstepx_broker(self):
+        """Initialize TopStepX broker if live trading is enabled"""
+        try:
+            # Check if TopStepX configuration exists
+            if hasattr(self.config, 'topstepx') and self.config.topstepx:
+                tsx_config = TopStepXConfig(
+                    api_key=getattr(self.config.topstepx, 'api_key', ''),
+                    environment=getattr(self.config.topstepx, 'environment', 'DEMO'),
+                    account_id=getattr(self.config.topstepx, 'account_id', None),
+                    enable_streaming=getattr(self.config.topstepx, 'enable_streaming', True)
+                )
+                
+                if tsx_config.api_key:
+                    self.topstepx_broker = TopStepXBroker(tsx_config)
+                    self.logger.info(f"TopStepX broker initialized for {tsx_config.environment} environment")
+                else:
+                    self.logger.warning("TopStepX API key not configured - live trading disabled")
+            else:
+                self.logger.info("TopStepX configuration not found - using paper trading only")
+                
+        except Exception as e:
+            self.logger.error(f"Error initializing TopStepX broker: {e}")
+            self.topstepx_broker = None
+    
     def set_paper_trader(self, paper_trader):
         """Set paper trader after initialization to avoid circular import"""
         self.paper_trader = paper_trader
@@ -92,6 +122,15 @@ class TradeExecutor:
         """Initialize the trade executor"""
         try:
             self.logger.info("Initializing Trade Executor...")
+            
+            # Initialize TopStepX broker if available
+            if self.topstepx_broker:
+                broker_initialized = await self.topstepx_broker.initialize()
+                if broker_initialized:
+                    self.logger.info("✅ TopStepX live trading enabled")
+                else:
+                    self.logger.warning("⚠️ TopStepX initialization failed - falling back to paper trading")
+                    self.topstepx_broker = None
             
             # Load active positions from database
             await self._load_active_positions()
@@ -157,15 +196,19 @@ class TradeExecutor:
             if not position:
                 return False
             
-            # Execute entry order
-            if await self._execute_entry_order(position):
+            # Execute entry order (live or paper trading)
+            success = await self._execute_entry_order(position)
+            
+            if success:
                 self.active_positions[position.alert_id] = position
                 
-                # Start price monitoring if not already running
-                if not self.is_monitoring:
+                # Start price monitoring if not already running (for paper trading)
+                # Live trading uses TopStepX streaming for position management
+                if not self.is_monitoring and not self.topstepx_broker:
                     await self._start_price_monitoring()
                 
-                self.logger.info(f"✅ Trade execution started for alert {position.alert_id}")
+                trading_mode = "LIVE" if self.topstepx_broker and self.topstepx_broker.is_connected else "PAPER"
+                self.logger.info(f"✅ {trading_mode} trade execution started for alert {position.alert_id}")
                 
                 # Send email notification
                 if self.email_notifier:
@@ -295,25 +338,53 @@ class TradeExecutor:
         try:
             self.logger.info(f"Executing entry order: BUY {position.full_quantity} @ market")
             
-            # Route order to appropriate trading system(s)
-            orders = await self._route_order("MARKET", "BUY", position.full_quantity)
-            
-            if orders:
-                # Store all order IDs (comma-separated for multiple orders)
-                order_ids = [order.order_id for order in orders]
-                position.entry_order_id = ",".join(order_ids)
-                position.trade_status = TradeStatus.ENTRY_SUBMITTED
-                position.updated_at = datetime.now(timezone.utc)
+            # Check if we should use live TopStepX trading
+            if self.topstepx_broker and self.topstepx_broker.is_connected:
+                # Execute live trade through TopStepX
+                alert_data = {
+                    'symbol': position.symbol,
+                    'direction': position.side.lower(),
+                    'price': position.entry_price,
+                    'size': position.full_quantity,
+                    'stop': position.stop_price
+                }
                 
-                # Update database
-                if position.trade_id:
-                    self.db.update_trade_status(position.trade_id, "ENTRY_SUBMITTED")
-                
-                self.logger.info(f"✅ Entry order(s) submitted: {position.entry_order_id}")
-                return True
+                live_position = await self.topstepx_broker.execute_trade(alert_data)
+                if live_position:
+                    # Update position with live trading details
+                    position.entry_order_id = live_position.broker_order_id
+                    position.trade_status = TradeStatus.ENTRY_SUBMITTED
+                    position.updated_at = datetime.now(timezone.utc)
+                    
+                    # Update database
+                    if position.trade_id:
+                        self.db.update_trade_status(position.trade_id, "ENTRY_SUBMITTED")
+                    
+                    self.logger.info(f"✅ LIVE entry order submitted via TopStepX: {position.entry_order_id}")
+                    return True
+                else:
+                    self.logger.error("Failed to place live TopStepX entry order")
+                    return False
             else:
-                self.logger.error("Failed to place entry order")
-                return False
+                # Fallback to paper trading
+                orders = await self._route_order("MARKET", "BUY", position.full_quantity)
+                
+                if orders:
+                    # Store all order IDs (comma-separated for multiple orders)
+                    order_ids = [order.order_id for order in orders]
+                    position.entry_order_id = ",".join(order_ids)
+                    position.trade_status = TradeStatus.ENTRY_SUBMITTED
+                    position.updated_at = datetime.now(timezone.utc)
+                    
+                    # Update database
+                    if position.trade_id:
+                        self.db.update_trade_status(position.trade_id, "ENTRY_SUBMITTED")
+                    
+                    self.logger.info(f"✅ PAPER entry order(s) submitted: {position.entry_order_id}")
+                    return True
+                else:
+                    self.logger.error("Failed to place paper entry order")
+                    return False
                 
         except Exception as e:
             self.logger.error(f"Error executing entry order: {e}")
@@ -637,6 +708,11 @@ class TradeExecutor:
                     await self.price_monitor_task
                 except asyncio.CancelledError:
                     pass
+            
+            # Shutdown TopStepX broker if connected
+            if self.topstepx_broker:
+                await self.topstepx_broker.shutdown()
+                self.logger.info("✅ TopStepX broker shutdown complete")
             
             self.logger.info("✅ Trade Executor shutdown complete")
             
