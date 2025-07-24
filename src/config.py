@@ -12,22 +12,97 @@ from pathlib import Path
 
 @dataclass
 class DiscordConfig:
-    """Discord-related configuration"""
+    """Discord bot configuration"""
     token: str
-    channel_id: int
-    target_author: str
+    channels: Dict[str, int]  # Channel name -> Channel ID mapping
+    target_authors: List[str]  # List of authors to monitor
     reconnect_attempts: int = 5
     reconnect_delay: int = 30
+    
+    # Legacy support for single channel
+    @property
+    def channel_id(self) -> int:
+        """Get primary channel ID for backward compatibility"""
+        return list(self.channels.values())[0] if self.channels else 0
+    
+    @property
+    def target_author(self) -> str:
+        """Get primary author for backward compatibility"""
+        return self.target_authors[0] if self.target_authors else "JMoney"
 
 
 @dataclass
 class PaperTradingConfig:
-    """Paper trading configuration"""
+    """Paper trading specific configuration"""
     starting_balance: float = 50000.0
     realistic_slippage: bool = True
     slippage_ticks: int = 1
     commission_per_contract: float = 2.50
     track_separately: bool = True
+
+
+@dataclass
+class WebullConfig:
+    """Webull broker configuration"""
+    username: str = ""
+    password: str = ""
+    device_id: str = ""
+    trading_pin: str = ""
+    paper_trading: bool = True
+    enabled: bool = False
+
+
+@dataclass
+class TDAConfig:
+    """TD Ameritrade broker configuration"""
+    client_id: str = ""
+    redirect_uri: str = "https://localhost"
+    token_path: str = "data/td_token.json"
+    paper_trading: bool = True
+    enabled: bool = False
+
+
+@dataclass
+class ETradeConfig:
+    """E*TRADE broker configuration"""
+    consumer_key: str = ""
+    consumer_secret: str = ""
+    prod_base_url: str = "https://api.etrade.com"
+    sandbox_base_url: str = "https://etwssandbox.etrade.com"
+    sandbox: bool = True
+    with_browser: bool = True
+    enabled: bool = False
+
+
+@dataclass
+class IBKRConfig:
+    """Interactive Brokers configuration"""
+    account: str = ""
+    host: str = "127.0.0.1"
+    port: int = 7497  # 7496 for live, 7497 for paper
+    client_id: int = 123
+    paper_trading: bool = True
+    enabled: bool = False
+
+
+@dataclass
+class TradeStationConfig:
+    """TradeStation broker configuration"""
+    api_key: str = ""
+    secret: str = ""
+    redirect_uri: str = "https://localhost:3000"
+    paper_trading: bool = True
+    enabled: bool = False
+
+
+@dataclass
+class SchwabConfig:
+    """Charles Schwab broker configuration"""
+    app_key: str = ""
+    app_secret: str = ""
+    redirect_uri: str = "https://localhost"
+    paper_trading: bool = True
+    enabled: bool = False
 
 
 @dataclass
@@ -123,6 +198,13 @@ class ConfigManager:
         self.database: Optional[DatabaseConfig] = None
         self.logging: Optional[LoggingConfig] = None
         self.email: Optional[EmailConfig] = None
+        # Multi-broker support
+        self.webull: Optional[WebullConfig] = None
+        self.tda: Optional[TDAConfig] = None
+        self.etrade: Optional[ETradeConfig] = None
+        self.ibkr: Optional[IBKRConfig] = None
+        self.tradestation: Optional[TradeStationConfig] = None
+        self.schwab: Optional[SchwabConfig] = None
         
     def load_config(self) -> bool:
         """Load configuration from YAML file and environment variables"""
@@ -134,17 +216,27 @@ class ConfigManager:
             else:
                 raise FileNotFoundError(f"Configuration file {self.config_file} not found")
             
-            # Load Discord configuration
+            # Load Discord configuration with default multi-channel setup
             discord_data = config_data.get('discord', {})
-            # Override with environment variables if available
-            discord_token = os.getenv('DISCORD_TOKEN', discord_data.get('token', ''))
-            if not discord_token:
-                raise ValueError("Discord token must be provided in config file or DISCORD_TOKEN environment variable")
+            
+            # Default Discord token (user provided)
+            discord_token = os.getenv('DISCORD_TOKEN', discord_data.get('token', 'MzY5NTkyNzMwODM5Njc4OTc4.GKOPM9.sHQJ_AugT76APLe-flw5uqmX_O0JgxuJFgv1J8'))
+            
+            # Default channel configuration
+            default_channels = {
+                "TWI_Futures": 1127635026318721094,
+                "TWI_Options": 1337621057552650240
+            }
+            channels = discord_data.get('channels', default_channels)
+            
+            # Default target authors
+            default_authors = ["Twinsight Bot #7577", "twi_jmoney"]
+            target_authors = discord_data.get('target_authors', default_authors)
             
             self.discord = DiscordConfig(
                 token=discord_token,
-                channel_id=discord_data.get('channel_id', 0),
-                target_author=discord_data.get('target_author', 'JMoney'),
+                channels=channels,
+                target_authors=target_authors,
                 reconnect_attempts=discord_data.get('reconnect_attempts', 5),
                 reconnect_delay=discord_data.get('reconnect_delay', 30)
             )

@@ -6,37 +6,36 @@ Monitors Discord channel for JMoney's trading alerts and processes them
 import discord
 import asyncio
 import logging
-from typing import Optional, Callable, Dict, Any
-from datetime import datetime, timezone
+from typing import Dict, Any, Callable, Optional, List
+from datetime import datetime
 
-try:
-    from .message_parser import JMoneyMessageParser, ParsedAlert
-    from .database import DatabaseManager
-    from .config import ConfigManager
-except ImportError:
-    # Fallback for direct execution
-    from message_parser import JMoneyMessageParser, ParsedAlert
-    from database import DatabaseManager
-    from config import ConfigManager
+from .config import ConfigManager
+from .alert_parser import AlertParser, ParsedAlert
+from .options_parser import OptionsAlertParser, ParsedOptionsAlert
+from .database import DatabaseManager
 
 
 class DiscordMonitor:
-    """Discord bot to monitor JMoney's trading alerts"""
+    """Discord bot to monitor multiple channels for trading alerts"""
     
     def __init__(self, config: ConfigManager, db: DatabaseManager, 
-                 on_valid_alert: Optional[Callable[[ParsedAlert, Dict[str, Any]], None]] = None):
+                 on_valid_futures_alert: Optional[Callable[[ParsedAlert, Dict[str, Any]], None]] = None,
+                 on_valid_options_alert: Optional[Callable[[ParsedOptionsAlert, Dict[str, Any]], None]] = None):
         """
         Initialize Discord monitor
         
         Args:
             config: Configuration manager instance
             db: Database manager instance
-            on_valid_alert: Callback function for valid alerts
+            on_valid_futures_alert: Callback function for valid futures alerts
+            on_valid_options_alert: Callback function for valid options alerts
         """
         self.config = config
         self.db = db
-        self.parser = JMoneyMessageParser()
-        self.on_valid_alert = on_valid_alert
+        self.futures_parser = AlertParser()
+        self.options_parser = OptionsAlertParser()
+        self.on_valid_futures_alert = on_valid_futures_alert
+        self.on_valid_options_alert = on_valid_options_alert
         
         self.logger = logging.getLogger(__name__)
         self.client: Optional[discord.Client] = None
@@ -137,18 +136,29 @@ class DiscordMonitor:
             await self._handle_message(message)
     
     async def _handle_message(self, message: discord.Message):
-        """Handle incoming Discord messages"""
+        """Handle incoming Discord messages from multiple channels"""
         try:
             # Skip messages from the bot itself
             if message.author == self.client.user:
                 return
             
-            # Check if message is from target channel
-            if message.channel.id != self.config.discord.channel_id:
+            # Check if message is from one of our monitored channels
+            channel_name = self._get_channel_name(message.channel.id)
+            if not channel_name:
                 return
             
-            # Check if message is from target author (case insensitive)
-            if message.author.display_name.lower() != self.config.discord.target_author.lower():
+            # Check if message is from one of our target authors
+            if not self._is_target_author(message.author.display_name):
+                return
+            
+            # Route message to appropriate parser based on channel
+            if channel_name == "TWI_Futures":
+                await self._handle_futures_message(message, channel_name)
+            elif channel_name == "TWI_Options":
+                await self._handle_options_message(message, channel_name)
+            else:
+                # Log all messages for monitoring
+                await self._log_message(message, channel_name)
                 return
             
             self.stats['messages_processed'] += 1

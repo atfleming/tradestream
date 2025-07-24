@@ -1,52 +1,279 @@
 # 📖 TradeStream User Guide
 
-> **Complete Setup and Usage Guide for Paper Trading and Live Trading with TradeForgePy**
+> **Complete Setup and Usage Guide for Multi-Broker Trading with Professional Dashboard**
 
 ## Table of Contents
 1. [Overview](#overview)
 2. [Installation](#installation)
-3. [Configuration](#configuration)
-4. [Getting Started](#getting-started)
-5. [Trading Modes](#trading-modes)
-6. [Monitoring and Dashboard](#monitoring-and-dashboard)
-7. [Risk Management](#risk-management)
-8. [Backup and Recovery](#backup-and-recovery)
-9. [Troubleshooting](#troubleshooting)
-10. [Advanced Features](#advanced-features)
+3. [Multi-Broker Configuration](#multi-broker-configuration)
+4. [Dashboard Interface](#dashboard-interface)
+5. [Alert Tracking System](#alert-tracking-system)
+6. [Trading Modes](#trading-modes)
+7. [Paper Trading & Testing](#paper-trading--testing)
+8. [Live Trading Setup](#live-trading-setup)
+9. [Performance Analytics](#performance-analytics)
+10. [Risk Management](#risk-management)
+11. [Troubleshooting](#troubleshooting)
+12. [Advanced Features](#advanced-features)
 
 ## Overview
 
-The JMoney Discord Alert Trading System is a sophisticated automated trading bot that:
-- Monitors Discord channels for JMoney's trading alerts
-- Parses "ES LONG" signals with entry, stop, and target levels
-- Executes MES (Micro E-mini S&P 500) trades automatically
-- Supports both paper trading and live trading modes
-- Provides advanced position management with partial exits
-- Offers comprehensive monitoring and risk management
+TradeStream is a comprehensive multi-broker automated trading system that:
+- **Multi-Channel Monitoring**: Monitors TWI_Futures and TWI_Options Discord channels simultaneously
+- **Multi-Broker Support**: Integrates with Webull, TD Ameritrade, E*TRADE, IBKR, TradeStation, and Schwab
+- **Futures Trading**: TopStepX integration for ES, NQ, YM, RTY futures via TradeForgePy
+- **Options Trading**: Full options support with BTO/STC parsing and execution
+- **Professional Dashboard**: Streamlit-based interface with real-time monitoring
+- **Alert Tracking**: Comprehensive tracking from Discord reception to trade execution
+- **Paper Trading**: Risk-free testing environment with realistic simulation
+- **Live Trading**: Production-ready execution with advanced risk management
 
 ### Key Features
-- **Real-time Discord Monitoring**: Listens to JMoney's alerts 24/7
-- **Advanced Position Management**: Target 1 (50% exit + breakeven), Target 2 (remaining 50%)
-- **Dual Trading Modes**: Paper trading for testing, live trading for real money
-- **Risk Management**: Daily limits, position controls, advanced risk metrics
-- **Live Dashboard**: Real-time monitoring with performance metrics
-- **Email Notifications**: HTML alerts for all trading events
-- **Hot-reload Configuration**: Update settings without restarting
-- **Backup System**: Automated data backup and recovery
+
+#### 🏦 **Multi-Broker Architecture**
+- **Futures Broker**: TopStepX for ES, NQ, YM, RTY futures trading
+- **Options Brokers**: Webull, TD Ameritrade, E*TRADE (fully implemented)
+- **Future Brokers**: IBKR, TradeStation, Schwab (placeholder implementations)
+- **Smart Routing**: Automatic broker selection based on asset type and availability
+- **Unified Interface**: Consistent API across all broker implementations
+
+#### 📡 **Multi-Channel Discord Integration**
+- **TWI_Futures Channel**: JMoney futures alerts (ES LONG/SHORT signals)
+- **TWI_Options Channel**: Options alerts with "BOUGHT" (BTO) and "SOLD" (STC) parsing
+- **Multi-Author Support**: Twinsight Bot #7577 and twi_jmoney
+- **Real-time Processing**: Sub-second alert processing and routing
+- **Alert Validation**: Confidence scoring and parsing verification
+
+#### 🖥️ **Professional Streamlit Dashboard**
+- **Multi-Page Interface**: Settings, Strategy, Performance, Alerts, Live Trading
+- **Real-Time Monitoring**: Live broker status, alert feeds, performance metrics
+- **Multi-Broker Configuration**: Visual setup for all supported brokers
+- **Alert Tracking Dashboard**: Dual feeds for trade alerts and all messages
+- **Performance Analytics**: Futures vs options filtering, P&L charts, trade history
+- **Live/Paper Toggle**: Seamless switching between trading modes
+
+#### 📊 **Advanced Alert Tracking**
+- **End-to-End Tracking**: From Discord reception to trade execution
+- **Performance Analytics**: Success rates, parsing confidence, execution metrics
+- **Database Persistence**: SQLite with optimized indexes for fast queries
+- **Real-Time Statistics**: Live dashboard with comprehensive metrics
+- **Audit Trail**: Complete history of all alert processing and execution
 
 ## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
-- Discord account with access to JMoney's channel
-- TopStepX account (for live trading)
-- Email account for notifications
+- **Python 3.8+** with pip package manager
+- **Discord Bot Token** with access to TWI_Futures and TWI_Options channels
+- **TopStepX Account** (for futures live trading)
+- **Broker Accounts** (optional, for options trading):
+  - Webull, TD Ameritrade, E*TRADE, IBKR, TradeStation, or Schwab
+- **Email Account** for notifications
+- **Git** for repository cloning
 
 ### Step 1: Clone Repository
 ```bash
-git clone <repository-url>
-cd jmoney_alerts
+git clone https://github.com/atfleming/tradestream.git
+cd tradestream
 ```
+
+### Step 2: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Launch Dashboard
+```bash
+streamlit run dashboard.py
+```
+
+The dashboard will open in your browser at `http://localhost:8501`.
+
+## Multi-Broker Configuration
+
+### Supported Brokers
+
+#### **TopStepX (Futures Trading)**
+- **Assets**: ES, NQ, YM, RTY futures
+- **Features**: Live trading, paper trading, real-time streaming
+- **Setup**: Environment variables for credentials
+
+#### **Webull (Options Trading)**
+- **Assets**: Stocks, Options
+- **Features**: BTO, STC, limit orders
+- **Setup**: Email, password, trading PIN, device ID
+
+#### **TD Ameritrade (Options Trading)**
+- **Assets**: Stocks, Options, Futures
+- **Features**: Full options support, OAuth authentication
+- **Setup**: Client ID, redirect URL, credentials path
+
+#### **E*TRADE (Options Trading)**
+- **Assets**: Stocks, Options
+- **Features**: OAuth authentication, sandbox testing
+- **Setup**: Consumer key/secret from E*TRADE
+
+### Environment Variables Setup
+
+Create a `.env` file in the project root:
+
+```bash
+# TopStepX Futures Trading
+TOPSTEPX_USERNAME=your_username
+TOPSTEPX_PASSWORD=your_password
+TOPSTEPX_API_KEY=your_api_key
+
+# Webull Options Trading
+WEBULL_EMAIL=your_email
+WEBULL_PASSWORD=your_password
+WEBULL_TRADING_PIN=123456
+WEBULL_DEVICE_ID=your_device_id
+WEBULL_SECURITY_DID=your_security_did
+
+# TD Ameritrade Options Trading
+TDA_CLIENT_ID=your_client_id
+TDA_REDIRECT_URL=https://localhost
+TDA_CREDENTIALS_PATH=./tda_credentials.json
+TDA_ACCOUNT_ID=your_account_id
+
+# E*TRADE Options Trading
+ETRADE_CONSUMER_KEY=your_consumer_key
+ETRADE_CONSUMER_SECRET=your_consumer_secret
+
+# Discord Configuration
+DISCORD_TOKEN=your_discord_bot_token
+
+# Email Notifications
+EMAIL_ADDRESS=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+```
+
+## Dashboard Interface
+
+### Main Dashboard
+The main dashboard provides:
+- **System Status**: Real-time broker connection status
+- **Performance Metrics**: Live P&L, trade statistics, success rates
+- **Alert Feeds**: Dual feeds for trade alerts and all messages
+- **Live/Paper Toggle**: Switch between trading modes
+
+### Settings Page
+Configure all system components:
+- **Discord Settings**: Token, channels, target authors
+- **Trading Settings**: Risk parameters, position sizing
+- **Multi-Broker Settings**: Configure all supported brokers
+- **Email Settings**: Notification preferences
+- **Advanced Settings**: System configuration
+
+### Performance Page
+Comprehensive analytics:
+- **Metrics Overview**: Total P&L, win rate, Sharpe ratio
+- **Performance Charts**: Equity curve, drawdown analysis
+- **Trade History**: Detailed trade-by-trade breakdown
+- **Futures vs Options**: Separate performance tracking
+
+### Alerts Page
+Alert management and monitoring:
+- **Live Alerts**: Real-time alert processing
+- **Alert History**: Historical alert database
+- **Notifications**: Alert processing settings
+- **Statistics**: Success rates, parsing confidence
+
+## Alert Tracking System
+
+### Alert Processing Flow
+1. **Reception**: Discord message received
+2. **Parsing**: Extract trading information
+3. **Validation**: Confidence scoring and verification
+4. **Routing**: Route to appropriate broker
+5. **Execution**: Paper or live trade execution
+6. **Tracking**: Store results and update analytics
+
+### Alert Types
+
+#### **Futures Alerts (TWI_Futures Channel)**
+```
+ES LONG 4750 STOP 4745 T1 4755 T2 4760
+```
+- **Symbol**: ES (E-mini S&P 500)
+- **Direction**: LONG or SHORT
+- **Entry**: 4750
+- **Stop Loss**: 4745
+- **Target 1**: 4755 (50% exit)
+- **Target 2**: 4760 (remaining 50%)
+
+#### **Options Alerts (TWI_Options Channel)**
+```
+BOUGHT SPY 01/31 480 CALLS @ 2.50
+SOLD SPY 01/31 480 CALLS @ 3.25
+```
+- **Action**: BOUGHT (BTO) or SOLD (STC)
+- **Symbol**: SPY
+- **Expiration**: 01/31
+- **Strike**: 480
+- **Type**: CALLS or PUTS
+- **Price**: 2.50
+
+## Paper Trading & Testing
+
+### Paper Trading Mode
+- **Risk-Free Testing**: Test all functionality without real money
+- **Realistic Simulation**: Includes slippage, commissions, market hours
+- **Full Feature Set**: All features available in paper mode
+- **Performance Tracking**: Complete analytics and reporting
+
+### Testing Workflow
+1. **Enable Paper Trading**: Use dashboard toggle
+2. **Configure Brokers**: Set up broker connections
+3. **Monitor Alerts**: Watch real Discord channels
+4. **Review Performance**: Analyze results in dashboard
+5. **Optimize Settings**: Adjust risk parameters
+6. **Go Live**: Switch to live trading when ready
+
+## Live Trading Setup
+
+### Prerequisites
+- **Funded Accounts**: Ensure sufficient capital in broker accounts
+- **API Access**: Enable API trading in broker accounts
+- **Risk Management**: Set appropriate position sizes and limits
+- **Testing Complete**: Thoroughly test in paper mode first
+
+### Go-Live Checklist
+- [ ] Paper trading results satisfactory
+- [ ] All broker connections tested
+- [ ] Risk parameters configured
+- [ ] Position sizing appropriate
+- [ ] Stop losses and targets verified
+- [ ] Email notifications working
+- [ ] Dashboard monitoring active
+- [ ] Backup systems in place
+
+### Live Trading Activation
+1. **Switch Mode**: Toggle from paper to live in dashboard
+2. **Verify Connections**: Ensure all brokers connected
+3. **Start Small**: Begin with minimum position sizes
+4. **Monitor Closely**: Watch first few trades carefully
+5. **Scale Gradually**: Increase size as confidence grows
+
+## Performance Analytics
+
+### Key Metrics
+- **Total P&L**: Cumulative profit/loss across all trades
+- **Win Rate**: Percentage of profitable trades
+- **Profit Factor**: Gross profits / gross losses
+- **Sharpe Ratio**: Risk-adjusted returns
+- **Maximum Drawdown**: Largest peak-to-trough decline
+- **Average Trade**: Mean profit/loss per trade
+
+### Filtering Options
+- **Asset Type**: Futures vs Options
+- **Broker**: Performance by broker
+- **Time Period**: Daily, weekly, monthly analysis
+- **Trade Type**: BTO, STC, LONG, SHORT
+
+### Export Features
+- **CSV Export**: Download trade data
+- **PDF Reports**: Generate performance reports
+- **Email Summaries**: Automated daily/weekly reports
 
 ### Step 2: Install Dependencies
 ```bash

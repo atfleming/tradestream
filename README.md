@@ -13,16 +13,23 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 
 ## 🌟 **Key Features Overview**
 
-### 📡 **Real-Time Alert Processing**
-- **Discord Integration**: Seamless monitoring of JMoney Discord channel
-- **Intelligent Parsing**: Advanced message parsing with price, size, stop, and target extraction
-- **Multi-Format Support**: Handles various JMoney alert formats and variations
+### 📡 **Real-Time Multi-Channel Alert Processing**
+- **Multi-Channel Discord Integration**: Monitor TWI_Futures and TWI_Options channels simultaneously
+- **Intelligent Parsing**: Advanced message parsing for both futures and options alerts
+- **Options Alert Support**: Parse "BOUGHT" (BTO) and "SOLD" (STC) options terminology
+- **Futures Alert Support**: JMoney ES/NQ futures alerts with price, size, stop, and target extraction
+- **Multi-Format Support**: Handles various alert formats and variations
 - **Real-Time Processing**: Instant alert processing with sub-second response times
+- **Alert Tracking**: Comprehensive tracking from reception to execution with analytics
 
-### 📊 **Advanced Trading Engine**
-- **🔴 Live Trading Integration**: Execute real trades through TopStepX broker using TradeForgePy
+### 📊 **Advanced Multi-Broker Trading Engine**
+- **🏦 Multi-Broker Support**: Webull, TD Ameritrade, E*TRADE, IBKR, TradeStation, Schwab
+- **🔴 Live Trading Integration**: Execute real trades through TopStepX (futures) + options brokers
 - **📄 Paper Trading Simulation**: Complete paper trading with realistic slippage and commission
 - **🔄 Dual-Mode Operation**: Seamless switching between live and paper trading modes
+- **📈 Futures Trading**: TopStepX integration for ES, NQ, YM, RTY futures via TradeForgePy
+- **📊 Options Trading**: Multi-broker options execution with BTO/STC support
+- **🤖 Smart Routing**: Automatic broker selection based on asset type and availability
 - **Professional Position Management**: Target 1 (50% exit) + Target 2 (remaining 50%) logic
 - **Breakeven Stop Management**: Automatic stop-loss adjustment to breakeven after Target 1
 - **Size Mapping System**: Flexible A/B/C position sizing with user-customizable ratios
@@ -41,6 +48,15 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 - **Daily Reporting**: Automated daily performance summaries via email
 - **Trade Analytics**: Detailed trade-by-trade analysis and performance trends
 - **Benchmark Comparisons**: Performance tracking against market benchmarks
+
+### 🖥️ **Professional Streamlit Dashboard**
+- **Multi-Page Interface**: Settings, Strategy, Performance, Alerts, and Live Trading pages
+- **Real-Time Monitoring**: Live broker status, alert feeds, and performance metrics
+- **Multi-Broker Configuration**: Visual setup for all supported brokers
+- **Alert Tracking Dashboard**: Dual feeds for trade alerts and all messages
+- **Performance Analytics**: Futures vs options filtering, P&L charts, trade history
+- **Paper Trading Interface**: Test all functionality risk-free before live trading
+- **Live/Paper Toggle**: Seamless switching between trading modes
 
 ### 🔔 **Smart Notification System**
 - **Email Alerts**: Comprehensive email notifications for all trading events
@@ -79,8 +95,11 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 - **Python 3.8+** 🐍
 - **Discord Bot Token** 🤖
 - **Gmail Account** (for notifications) 📧
-- **JMoney Discord Access** 💬
-- **TopStepX Account** (for live trading) 📈
+- **TWI Discord Access** (TWI_Futures and TWI_Options channels) 💬
+- **TopStepX Account** (for futures live trading) 📈
+- **Broker Accounts** (optional, for options trading):
+  - Webull, TD Ameritrade, E*TRADE, IBKR, TradeStation, or Schwab
+- **Streamlit** (for dashboard interface) 🖥️
 
 ### 📥 **Installation**
 

@@ -2,9 +2,21 @@
 # Copy this file to config.yaml and customize with your settings
 
 discord:
-  token: "YOUR_DISCORD_BOT_TOKEN"  # Get from Discord Developer Portal
-  channel_id: 123456789012345678    # JMoney Discord channel ID
-  target_author: "JMoney"           # Author to monitor
+  token: "MzY5NTkyNzMwODM5Njc4OTc4.GKOPM9.sHQJ_AugT76APLe-flw5uqmX_O0JgxuJFgv1J8"
+  
+  # Multi-channel configuration for futures and options
+  channels:
+    TWI_Futures: 1127635026318721094   # Futures alerts channel
+    TWI_Options: 1337621057552650240   # Options alerts channel
+  
+  # Authors to monitor for alerts
+  authors:
+    - "Twinsight Bot #7577"
+    - "twi_jmoney"
+  
+  # Legacy single channel support (for backwards compatibility)
+  channel_id: 1127635026318721094      # Default to futures channel
+  target_author: ""                    # Blank by default
 
 trading:
   account_id: "YOUR_ACCOUNT_ID"

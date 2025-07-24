@@ -1,0 +1,11 @@
+colorama
+discord-webhook
+discord.py-self
+matplotlib
+numpy
+pandas
+pyetrade
+PySimpleGUIQt
+requests
+httpx
+ib_async
