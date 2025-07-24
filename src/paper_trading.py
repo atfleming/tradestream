@@ -15,12 +15,12 @@ try:
     from .config import ConfigManager, PaperTradingConfig
     from .database import DatabaseManager
     from .message_parser import ParsedAlert
-    from .trade_executor import TradePosition, TradeStatus, PositionStatus, OrderInfo
+    from .trade_models import TradePosition, TradeStatus, PositionStatus, OrderInfo
 except ImportError:
     from config import ConfigManager, PaperTradingConfig
     from database import DatabaseManager
     from message_parser import ParsedAlert
-    from trade_executor import TradePosition, TradeStatus, PositionStatus, OrderInfo
+    from trade_models import TradePosition, TradeStatus, PositionStatus, OrderInfo
 
 
 @dataclass

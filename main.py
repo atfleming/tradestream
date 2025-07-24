@@ -112,9 +112,12 @@ class JMoneyTradingBot:
                 config=self.config,
                 db=self.db,
                 tsx_api=self.tsx_api,
-                paper_trader=self.paper_trader,
                 email_notifier=self.email_notifier
             )
+            
+            # Set paper trader after initialization to avoid circular import
+            if self.paper_trader:
+                self.trade_executor.set_paper_trader(self.paper_trader)
             
             if not await self.trade_executor.initialize():
                 self.logger.error("❌ Failed to initialize trade executor")

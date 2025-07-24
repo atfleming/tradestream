@@ -16,80 +16,19 @@ try:
     from .config import ConfigManager
     from .database import DatabaseManager
     from .message_parser import ParsedAlert
-    from .tsx_integration import TopStepXIntegration, OrderInfo
+    from .tsx_integration import TopStepXIntegration
     from .email_notifier import EmailNotifier
-    from .paper_trading import PaperTradingSimulator
+    from .trade_models import TradeStatus, PositionStatus, TradePosition, OrderInfo
 except ImportError:
     from config import ConfigManager
     from database import DatabaseManager
     from message_parser import ParsedAlert
-    from tsx_integration import TopStepXIntegration, OrderInfo
+    from tsx_integration import TopStepXIntegration
     from email_notifier import EmailNotifier
-    from paper_trading import PaperTradingSimulator
+    from trade_models import TradeStatus, PositionStatus, TradePosition, OrderInfo
 
 
-class TradeStatus(Enum):
-    """Trade execution status"""
-    PENDING = "PENDING"
-    ENTRY_SUBMITTED = "ENTRY_SUBMITTED"
-    ENTRY_FILLED = "ENTRY_FILLED"
-    STOP_PLACED = "STOP_PLACED"
-    TARGET1_HIT = "TARGET1_HIT"
-    TARGET2_HIT = "TARGET2_HIT"
-    STOPPED_OUT = "STOPPED_OUT"
-    CANCELLED = "CANCELLED"
-    ERROR = "ERROR"
-
-
-class PositionStatus(Enum):
-    """Position status"""
-    FULL = "FULL"          # Full position active
-    HALF = "HALF"          # Half position after T1 hit
-    CLOSED = "CLOSED"      # Position fully closed
-
-
-@dataclass
-class TradePosition:
-    """Represents an active trade position"""
-    alert_id: int
-    trade_id: Optional[int] = None
-    
-    # Alert details
-    entry_price: float = 0.0
-    stop_price: float = 0.0
-    target1_price: float = 0.0
-    target2_price: float = 0.0
-    size_code: str = ""
-    full_quantity: int = 0
-    
-    # Position tracking
-    current_quantity: int = 0
-    position_status: PositionStatus = PositionStatus.FULL
-    trade_status: TradeStatus = TradeStatus.PENDING
-    
-    # Order tracking
-    entry_order_id: Optional[str] = None
-    stop_order_id: Optional[str] = None
-    target1_order_id: Optional[str] = None
-    target2_order_id: Optional[str] = None
-    
-    # Execution details
-    entry_fill_price: Optional[float] = None
-    entry_fill_time: Optional[datetime] = None
-    target1_fill_price: Optional[float] = None
-    target1_fill_time: Optional[datetime] = None
-    target2_fill_price: Optional[float] = None
-    target2_fill_time: Optional[datetime] = None
-    stop_fill_price: Optional[float] = None
-    stop_fill_time: Optional[datetime] = None
-    
-    # P&L tracking
-    realized_pnl: float = 0.0
-    unrealized_pnl: float = 0.0
-    
-    # Timestamps
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+# Trade models are now imported from trade_models.py to avoid circular dependencies
 
 
 class TradeExecutor:
@@ -97,7 +36,6 @@ class TradeExecutor:
     
     def __init__(self, config: ConfigManager, db: DatabaseManager, 
                  tsx_api: Optional[TopStepXIntegration] = None, 
-                 paper_trader: Optional[PaperTradingSimulator] = None,
                  email_notifier: Optional[EmailNotifier] = None):
         """
         Initialize trade executor
@@ -106,13 +44,12 @@ class TradeExecutor:
             config: Configuration manager
             db: Database manager
             tsx_api: TopStepX API integration (for live trading)
-            paper_trader: Paper trading simulator (for paper trading)
             email_notifier: Email notification system
         """
         self.config = config
         self.db = db
         self.tsx_api = tsx_api
-        self.paper_trader = paper_trader
+        self.paper_trader = None  # Set later to avoid circular import
         self.email_notifier = email_notifier
         self.logger = logging.getLogger(__name__)
         
@@ -145,6 +82,11 @@ class TradeExecutor:
         # Price monitoring
         self.price_monitor_task: Optional[asyncio.Task] = None
         self.is_monitoring = False
+    
+    def set_paper_trader(self, paper_trader):
+        """Set paper trader after initialization to avoid circular import"""
+        self.paper_trader = paper_trader
+        self.logger.info("Paper trader set successfully")
     
     async def initialize(self) -> bool:
         """Initialize the trade executor"""

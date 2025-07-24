@@ -13,9 +13,11 @@ from dataclasses import dataclass
 try:
     from .config import ConfigManager
     from .database import DatabaseManager
+    from .trade_models import OrderInfo
 except ImportError:
     from config import ConfigManager
     from database import DatabaseManager
+    from trade_models import OrderInfo
 
 # TopStepX API imports (will be available after installing tsx_api)
 try:
@@ -57,18 +59,7 @@ class ContractInfo:
     margin_requirement: float
 
 
-@dataclass
-class OrderInfo:
-    """Order information"""
-    order_id: Optional[str] = None
-    side: str = ""  # "BUY" or "SELL"
-    quantity: int = 0
-    price: Optional[float] = None
-    order_type: str = "MARKET"  # "MARKET" or "LIMIT"
-    status: str = "PENDING"
-    fill_price: Optional[float] = None
-    fill_quantity: int = 0
-    timestamp: Optional[datetime] = None
+# OrderInfo is now imported from trade_models.py to avoid circular dependencies
 
 
 class TopStepXIntegration:
