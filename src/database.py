@@ -354,6 +354,21 @@ class DatabaseManager:
         except Exception as e:
             self.logger.error(f"Error getting system stats: {e}")
             return {}
+    
+    def get_daily_trade_count(self) -> int:
+        """Get count of trades for today"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT COUNT(*) FROM trades 
+                    WHERE DATE(created_at) = DATE('now')
+                ''')
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except Exception as e:
+            self.logger.error(f"Error getting daily trade count: {e}")
+            return 0
 
 
 # Global database instance

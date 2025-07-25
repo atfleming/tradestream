@@ -82,7 +82,9 @@ class JMoneyTradingBot:
             
             # 2. Initialize database
             self.logger.info("🗄️ Initializing database...")
-            self.db = DatabaseManager(self.config)
+            # Use database path from config if available, else fallback to default
+            db_path = getattr(self.config, 'database_path', 'data/trading_data.db')
+            self.db = DatabaseManager(db_path)
             if not self.db.initialize_database():
                 self.logger.error("❌ Failed to initialize database")
                 return False
@@ -130,13 +132,11 @@ class JMoneyTradingBot:
             self.discord_monitor = DiscordMonitor(
                 config=self.config,
                 db=self.db,
-                parser=self.parser,
-                alert_callback=self._handle_trading_alert
+                on_valid_futures_alert=self._handle_trading_alert
             )
             
-            if not await self.discord_monitor.initialize():
-                self.logger.error("❌ Failed to initialize Discord monitor")
-                return False
+            # Note: Discord monitor will be started in the run() method
+            self.logger.info("✅ Discord monitor created")
             
             self.logger.info("✅ Discord monitor initialized")
             
@@ -295,7 +295,7 @@ class JMoneyTradingBot:
         """Setup signal handlers for graceful shutdown"""
         def signal_handler(signum, frame):
             self.logger.info(f"📡 Received signal {signum}, initiating shutdown...")
-            asyncio.create_task(self.shutdown())
+            self.shutdown_event.set()
         
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
@@ -333,7 +333,7 @@ class JMoneyTradingBot:
             
             # Start Discord monitoring
             if self.discord_monitor:
-                await self.discord_monitor.start()
+                await self.discord_monitor.start_monitoring()
             
             # Wait for shutdown signal
             await self.shutdown_event.wait()

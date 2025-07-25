@@ -1,113 +1,17 @@
-# TradeStream - Professional Automated Trading System
-# Production-ready dependencies for enterprise-grade trading
+# TradeStream v2 - Discord Alert Trading Bot
+# Core dependencies for working bot
 
-# Core Python Requirements
-# Python 3.8+ required
-
-# Production dependencies
-discord.py>=2.3.0
+# Essential dependencies (tested and working)
+discord.py-self>=2.0.0
 pyyaml>=6.0
 aiohttp>=3.8.0
-psutil>=5.9.0
 pandas>=1.5.0
 numpy>=1.24.0
-sqlite3-utils>=0.4.0
-smtplib-ssl>=1.0.0
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.0.0
 requests>=2.28.0
 websockets>=11.0.0
-logging-config>=1.0.0
-backup-utils>=1.0.0
-health-monitor>=1.0.0
+audioop-lts>=0.2.1
 
-# TopStepX Live Trading Integration
-tradeforgepy>=1.0.0
-
-# Multi-Broker Trading Support
-# Webull API
-webull>=0.1.4
-
-# TD Ameritrade API
-tda-api>=1.4.0
-
-# E*TRADE API
-pyetrade>=1.3.0
-
-# Interactive Brokers (future)
-# ib-insync>=0.9.70
-
-# TradeStation API (future)
-# tradestation>=1.0.0
-
-# Charles Schwab API (future)
-# schwab-py>=1.0.0
-
-# Streamlit Dashboard
-streamlit>=1.28.0
-plotly>=5.17.0
-streamlit-option-menu>=0.3.6
-streamlit-autorefresh>=0.0.1
-streamlit-aggrid>=0.3.4
-
-# Database (SQLite is built-in)
-# sqlite3 - Built-in with Python
-
-# Alert Tracking & Analytics
-dataclasses-json>=0.6.0
-typing-extensions>=4.7.0
-
-# System Monitoring
-psutil>=5.9.0
-
-# File Watching (for config hot-reload)
-watchdog>=2.1.0
-
-# Testing Framework
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.0.0
-
-# Development Tools
-black>=22.0.0
-flake8>=5.0.0
-mypy>=1.0.0
-
-# Email Notifications
-# smtplib - Built-in with Python
-# email.mime - Built-in with Python
-
-# Logging
-# logging - Built-in with Python
-
-# Date/Time Handling
-# datetime - Built-in with Python
-
-# JSON Processing
-# json - Built-in with Python
-
-# Regular Expressions
-# re - Built-in with Python
-
-# Optional: TopStepX API Integration
-# tsxapipy>=1.0.0  # Install from local tsx_api-main directory
-# pip install ./tsx_api-main
-
-# Optional: Advanced Analytics
-# scipy>=1.9.0
-# scikit-learn>=1.1.0
-# matplotlib>=3.5.0
-# seaborn>=0.11.0
-
-# Configuration hot-reloading
-watchdog>=3.0.0
-python-dotenv>=0.19.0
-
-# System monitoring and health checks
-psutil>=5.9.0
-
-# Development and testing (optional)
-pytest>=7.0.0
-black>=22.0.0
-flake8>=4.0.0
+# Optional development dependencies
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.0.0

@@ -10,7 +10,7 @@ from typing import Dict, Any, Callable, Optional, List
 from datetime import datetime
 
 from .config import ConfigManager
-from .alert_parser import AlertParser, ParsedAlert
+from .message_parser import JMoneyMessageParser, ParsedAlert
 from .options_parser import OptionsAlertParser, ParsedOptionsAlert
 from .database import DatabaseManager
 
@@ -32,7 +32,7 @@ class DiscordMonitor:
         """
         self.config = config
         self.db = db
-        self.futures_parser = AlertParser()
+        self.futures_parser = JMoneyMessageParser()
         self.options_parser = OptionsAlertParser()
         self.on_valid_futures_alert = on_valid_futures_alert
         self.on_valid_options_alert = on_valid_options_alert
@@ -166,7 +166,7 @@ class DiscordMonitor:
             self.logger.info(f"Processing message from {message.author.display_name}: {message.content[:100]}...")
             
             # Parse the message
-            parsed_alert = self.parser.parse_message(
+            parsed_alert = self.futures_parser.parse_message(
                 message_content=message.content,
                 author=message.author.display_name
             )
@@ -189,19 +189,19 @@ class DiscordMonitor:
                 self.stats['valid_alerts'] += 1
                 self.stats['last_alert_time'] = datetime.now(timezone.utc)
                 
-                self.logger.info(f"Valid alert detected: {self.parser.format_alert_summary(parsed_alert)}")
+                self.logger.info(f"Valid alert detected: {self.futures_parser.format_alert_summary(parsed_alert)}")
                 
                 # Log successful parse
                 self.db.log_system_event(
                     level="INFO",
                     component="discord_monitor",
                     message="Valid trading alert detected",
-                    details=self.parser.format_alert_summary(parsed_alert),
+                    details=self.futures_parser.format_alert_summary(parsed_alert),
                     alert_id=alert_id
                 )
                 
                 # Call callback if provided
-                if self.on_valid_alert:
+                if self.on_valid_futures_alert:
                     message_data = {
                         'message_id': str(message.id),
                         'author': message.author.display_name,
@@ -234,10 +234,10 @@ class DiscordMonitor:
     async def _safe_callback(self, alert: ParsedAlert, message_data: Dict[str, Any]):
         """Safely execute callback function"""
         try:
-            if asyncio.iscoroutinefunction(self.on_valid_alert):
-                await self.on_valid_alert(alert, message_data)
+            if asyncio.iscoroutinefunction(self.on_valid_futures_alert):
+                await self.on_valid_futures_alert(alert, message_data)
             else:
-                self.on_valid_alert(alert, message_data)
+                self.on_valid_futures_alert(alert, message_data)
         except Exception as e:
             self.logger.error(f"Callback execution error: {e}")
             raise
