@@ -17,7 +17,7 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 - **Multi-Channel Discord Integration**: Monitor Futures and Options trade signal channels simultaneously.
 - **Intelligent Parsing**: Advanced message parsing for both futures and options alerts
 - **Options Alert Support**: Parse "BOUGHT" (BTO) and "SOLD" (STC) options terminology
-- **Futures Alert Support**: JMoney ES/NQ futures alerts with price, size, stop, and target extraction
+- **Futures Alert Support**: ES/NQ futures alerts with price, size, stop, and target extraction
 - **Multi-Format Support**: Handles various alert formats and variations
 - **Real-Time Processing**: Instant alert processing with sub-second response times
 - **Alert Tracking**: Comprehensive tracking from reception to execution with analytics
@@ -191,11 +191,11 @@ logging:
 2. **Add Bot to Server**
    - Go to "OAuth2" → "URL Generator"
    - Select "bot" scope and "Read Message History" permission
-   - Use generated URL to add bot to JMoney Discord server
+   - Use generated URL to add bot to Discord server
 
 3. **Get Channel ID**
    - Enable Developer Mode in Discord (User Settings → Advanced)
-   - Right-click on JMoney channel → "Copy ID"
+   - Right-click on futures channel → "Copy ID"
    - Add channel ID to your `config.yaml`
 
 #### **Step 3: Configure Email Notifications**
@@ -283,22 +283,6 @@ python src/main.py
 # Run in background with nohup
 nohup python src/main.py > logs/app.log 2>&1 &
 ```
-
-#### **Docker Deployment** (Optional)
-```bash
-# Build Docker image
-docker build -t jmoney-bot .
-
-# Run container
-docker run -d --name jmoney-bot \
-  -e DISCORD_TOKEN="your_token" \
-  -e GMAIL_USERNAME="your_email" \
-  -e GMAIL_PASSWORD="your_password" \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/logs:/app/logs \
-  jmoney-bot
-```
-
 ---
 
 ## 🧪 **Comprehensive Testing Suite**
@@ -338,7 +322,7 @@ python -m pytest --cov=src tests/ --cov-report=html
 ### **🏆 Test Achievements**
 
 - ✅ **Real Trading Workflows**: Complete paper trading validation
-- ✅ **JMoney Alert Compatibility**: 100% parsing accuracy
+- ✅ **Futures Alert Compatibility**: 100% parsing accuracy
 - ✅ **P&L Calculation Accuracy**: ES futures math verified ($50/point)
 - ✅ **Security Validation**: SQL injection, XSS, and input validation
 - ✅ **Performance Benchmarks**: Sub-second response times
@@ -466,19 +450,6 @@ Created by Drew Fleming, 2025
 - **📝 Issues**: Report bugs and feature requests
 - **💬 Discussions**: Community discussions and Q&A
 
-### **🔧 Development**
-
-```bash
-# Development setup
-git clone <repository-url>
-cd jmoney_alerts
-pip install -r requirements-dev.txt
-
-# Run development server
-python src/main.py --dev
-
-# Run tests during development
-python -m pytest tests/ -v --watch
 ```
 
 ---
