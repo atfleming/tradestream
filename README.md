@@ -14,7 +14,7 @@ A comprehensive, enterprise-grade automated trading system that monitors Discord
 ## 🌟 **Key Features Overview**
 
 ### 📡 **Real-Time Multi-Channel Alert Processing**
-- **Multi-Channel Discord Integration**: Monitor TWI_Futures and TWI_Options channels simultaneously
+- **Multi-Channel Discord Integration**: Monitor Futures and Options trade signal channels simultaneously.
 - **Intelligent Parsing**: Advanced message parsing for both futures and options alerts
 - **Options Alert Support**: Parse "BOUGHT" (BTO) and "SOLD" (STC) options terminology
 - **Futures Alert Support**: JMoney ES/NQ futures alerts with price, size, stop, and target extraction
