@@ -1,4 +1,4 @@
-# 🚀 TradeStream
+# 🚀 TradeStream Beta
 
 > **🏆 Production-Ready Automated Trading System with 100% Test Coverage**
 
